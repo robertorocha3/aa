@@ -1,0 +1,255 @@
+{
+    "meta": {
+        "downloadDate": "2016-01-23 10:33:06",
+        "downloadedFrom": "http://www.base-search.net",
+        "totalRecords": 12
+    },
+    "records": [
+        {
+            "record": {
+                "title": "H 6 Cl 2 Ni 1 P 2",
+                "creator": [
+                    "Rebecca M Twidale",
+                    "Rebecca M Twidale"
+                ],
+                "description": "Other ; No project ; Other ; No description",
+                "publisher": [
+                    "Imperial College London"
+                ],
+                "contributors": [
+                    "Imperial College London",
+                    "Imperial College London",
+                    "Rebecca M Twidale"
+                ],
+                "publicationDate": "2014",
+                "type": [
+                    "Collection",
+                    "Gaussian job archive"
+                ],
+                "rights": "Rebecca M Twidale",
+                "relations": [
+                    "url:https://spectradspace.lib.imperial.ac.uk:8443/metadata/handle/10042/29180/mets.xml",
+                    "url:https://spectradspace.lib.imperial.ac.uk:8443/metadata/handle/10042/29180/ore.xml",
+                    "handle:10042/28"
+                ],
+                "url": "http://dx.doi.org/10.14469/ch/23141",
+                "allUrls": [
+                    "http://dx.doi.org/10.14469/ch/23141"
+                ],
+                "contentProvider": {
+                    "name": "DataCite Metadata Store (German National Library of Science and Technology)",
+                    "url": "https://mds.datacite.org/"
+                }
+            }
+        },
+        {
+            "record": {
+                "title": "Model Specification Tests against Non-Nested Alternatives: Comment.",
+                "creator": [
+                    "Hendry, David F"
+                ],
+                "publicationDate": "1983",
+                "type": [
+                    "Article",
+                    "NonPeerReviewed"
+                ],
+                "source": "http://economics.ouls.ox.ac.uk/10409",
+                "relations": [
+                    "uuid:c204b77e-854b-45a9-96d6-454c12083415"
+                ],
+                "url": "http://economics.ouls.ox.ac.uk/10409/",
+                "allUrls": [
+                    "http://economics.ouls.ox.ac.uk/10409/"
+                ],
+                "contentProvider": {
+                    "name": "Oxford University Research Archive (ORA)",
+                    "url": "http://ora.ox.ac.uk/"
+                }
+            }
+        },
+        {
+            "record": {
+                "title": "South Melbourne, Raglan St. Chinese Joss House",
+                "creator": [
+                    "Collins, John T. 1907-2001 , photographer."
+                ],
+                "description": "Shows view of building from street and close-up of stone idol on pillar.",
+                "publicationDate": "5 September 2005",
+                "type": [
+                    "Gelatin silver photographs."
+                ],
+                "source": "Item held by State Library of Victoria",
+                "language": [
+                    "en"
+                ],
+                "rights": "Reproduction rights owned by the State Library of Victoria",
+                "relations": [
+                    "IspartOf J.T. Collins collection. Photographs."
+                ],
+                "url": "http://www.slv.vic.gov.au/jcollins/0/1/5/doc/jc015524.shtml",
+                "allUrls": [
+                    "http://www.slv.vic.gov.au/jcollins/0/1/5/doc/jc015524.shtml",
+                    "http://www.slv.vic.gov.au/jcollins/0/1/5/tn/jc015524.jpg"
+                ],
+                "contentProvider": {
+                    "name": "State Library of Victoria (Australia): Collections",
+                    "url": "http://www.slv.vic.gov.au/collections/"
+                }
+            }
+        },
+        {
+            "record": {
+                "title": "Product Markets and Labour Markets.",
+                "creator": [
+                    "Nickell, Stephen"
+                ],
+                "description": "The concern of this paper is whether monopoly power in the product market impacts badly on the performance of the labour market. There is strong evidence of the sharing of monopoly rents and of higher wages being associated with market power. It is not clear whether this is simply a union effect or whether it applies in the non-union sector. The balance of the evidence also suggests a negative relationship between product market power and productivity performance.",
+                "publicationDate": "1999",
+                "type": [
+                    "Article",
+                    "NonPeerReviewed"
+                ],
+                "source": "http://economics.ouls.ox.ac.uk/11089",
+                "relations": [
+                    "uuid:c205504e-79fb-4957-a19c-8c8a33ad795b"
+                ],
+                "url": "http://economics.ouls.ox.ac.uk/11089/",
+                "allUrls": [
+                    "http://economics.ouls.ox.ac.uk/11089/"
+                ],
+                "contentProvider": {
+                    "name": "Oxford University Research Archive (ORA)",
+                    "url": "http://ora.ox.ac.uk/"
+                }
+            }
+        },
+        {
+            "record": {
+                "title": "Type ia supernovae rates and galaxy clustering from the CFHT supernova legacy survey",
+                "creator": [
+                    "Graham, ML",
+                    "Pritchet, CJ",
+                    "Sullivan, M",
+                    "Gwyn, SDJ",
+                    "Neill, JD",
+                    "Hsiao, EY",
+                    "Astier, P",
+                    "Balam, D",
+                    "Balland, C",
+                    "Basa, S",
+                    "Carlberg, RG",
+                    "Conley, A",
+                    "Fouchez, D",
+                    "Guy, J",
+                    "Hardin, D",
+                    "Hook, IM",
+                    "Howell, DA",
+                    "Pain, R",
+                    "Perrett, K",
+                    "Regnault, N",
+                    "Baumont, S",
+                    "Le Du, J",
+                    "Lidman, C",
+                    "Perlmutter, S",
+                    "Ripoche, P",
+                    "Suzuki, N",
+                    "Walker, ES",
+                    "Zhang, T"
+                ],
+                "subjects": [
+                    "clusters : general",
+                    "supernovae : general"
+                ],
+                "publicationDate": "2008-4",
+                "type": [
+                    "Published",
+                    "Journal article"
+                ],
+                "source": "Symplectic Elements at Oxford ; Web of Science (Lite) (http://apps.webofknowledge.com/summary.do) ; CrossRef",
+                "language": [
+                    "aa"
+                ],
+                "relations": [
+                    "uuid:c2057478-734c-41e9-a6c2-2bcaca09371e",
+                    "urn:uuid:c2057478-734c-41e9-a6c2-2bcaca09371e",
+                    "issn:0004-6256",
+                    "local:5194",
+                    "eissn:1538-3881"
+                ],
+                "url": "http://dx.doi.org/10.1088/0004-6256/135/4/1343",
+                "allUrls": [
+                    "http://dx.doi.org/10.1088/0004-6256/135/4/1343"
+                ],
+                "contentProvider": {
+                    "name": "Oxford University Research Archive (ORA)",
+                    "url": "http://ora.ox.ac.uk/"
+                }
+            }
+        },
+        {
+            "record": {
+                "title": "Post-conflict risks.",
+                "creator": [
+                    "Collier, Paul",
+                    "Hoeffler, Anke",
+                    "Söderbom, Måns"
+                ],
+                "computedDdc": [
+                    "338"
+                ],
+                "description": "Post-conflict societies face two distinctive challenges: economic recovery and risk reduction. Aid and policy reforms have been found to be highly effective in the economic recovery. In this paper we concentrate on the other challenge, risk reduction. The post-conflict peace is typically fragile: around half of all civil wars are due to post-conflict relapses. Both external actors and the post-conflict government must therefore give priority to reducing the risk of conflict. Our statistical results suggest that economic development does substantially reduce risks, but it takes a long time. We also find evidence that UN peacekeeping expenditures significantly reduce the risk of renewed war. The effect is large: doubling expenditure reduces the risk from 40% to 31%. In contrast to these results we cannot find any systematic influence of elections on the reduction of war risk. Therefore, post-conflict elections should be promoted as intrinsically desirable rather than as mechanisms for increasing the durability of the post-conflict peace. Based on these results we suggest that peace appears to depend upon an external military presence sustaining a gradual economic recovery, with political design playing a somewhat subsidiary role. Since there is a simple and statistically strong relationship between the severity of post-conflict risks and the level of income at the end of the conflict this provides a clear and uncontroversial principle for resource allocation: resources per capita should be approximately inversely proportional to the level of income in the post-conflict country.",
+                "publisher": [
+                    "CSAE (University of Oxford)"
+                ],
+                "publicationDate": "2006",
+                "type": [
+                    "Monograph",
+                    "NonPeerReviewed"
+                ],
+                "source": "http://economics.ouls.ox.ac.uk/13631",
+                "relations": [
+                    "uuid:c20b361a-66e6-4f8a-8344-88a1d631754f",
+                    "http://www.csae.ox.ac.uk/workingpapers/pdfs/2006-12text.pdf"
+                ],
+                "url": "http://economics.ouls.ox.ac.uk/13631/",
+                "allUrls": [
+                    "http://economics.ouls.ox.ac.uk/13631/"
+                ],
+                "contentProvider": {
+                    "name": "Oxford University Research Archive (ORA)",
+                    "url": "http://ora.ox.ac.uk/"
+                }
+            }
+        },
+        {
+            "record": {
+                "title": "Law Library, Level 4, showing library stacks, The University of Queensland Library, St Lucia, 1998",
+                "creator": [
+                    "The University of Queensland Library"
+                ],
+                "subjects": [
+                    "University of Queensland Library",
+                    "Libraries (buildings)",
+                    "Wilson Architects",
+                    "Refurbishment"
+                ],
+                "publicationDate": "1998-01-01",
+                "type": [
+                    "Image"
+                ],
+                "rights": "Creative Commons Attribution share alike",
+                "rightsNorm": "CC-BY-SA",
+                "url": "http://espace.library.uq.edu.au/view/UQ:373647/thumbnail_UQLibrary_duhig_building_refurb_1997_1998_64.jpg",
+                "allUrls": [
+                    "http://espace.library.uq.edu.au/view/UQ:373647/thumbnail_UQLibrary_duhig_building_refurb_1997_1998_64.jpg",
+                    "http://espace.library.uq.edu.au/view/UQ:373647/web_UQLibrary_duhig_building_refurb_1997_1998_64.jpg",
+                    "http://espace.library.uq.edu.au/view/UQ:373647"
+                ],
+                "contentProvider": {
+                    "name": "The University of Queensland: UQ eSpace",
+                    "url": "http://espace.uq.edu.au/"
+                }
+            }
+        }
+    ]
+}

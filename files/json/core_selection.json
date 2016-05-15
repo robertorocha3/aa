@@ -1,0 +1,202 @@
+{
+    "status": "OK",
+    "totalHits": 42607,
+    "data": [{
+            "id": 6181890,
+            "authors": ["Netting, Andrew G.", "Theobald, Julian C.", "Dodd, Ian C."],
+            "contributors": [],
+            "datePublished": "2012-03-22",
+            "description": "Background: Accurate quantification of xylem sap ABA concentrations is important to underpin models of root-to-shoot ABA signalling to predict the physiological effects of soil drying. Growing tomato plants in a whole plant pressure chamber allowed sequential xylem sap collection from a detached leaf, the petiole stub of an otherwise intact plant and finally the de-topped root system of the same plant, to determine the impact of xylem sap sampling methodology on xylem ABA concentration. Since xylem sap can contain bound forms of ABA, a novel gas chromatography-mass spectrometry (GC-MS) procedure was developed to chemically separate free ABA from two in planta bound ABA forms known as Adducts I and II and ABA-glucose-ester (ABA-GE). Results: Xylem sap ABA concentrations were highly dependent on the sampling methodology used: the highest concentrations were detected in sap collected by applying an overpressure to detached leaves following the measurement of leaf water potential. Irrespective of xylem sap source, the wild-type cultivars Ailsa Craig and Rheinlands Ruhm had higher free ABA concentrations than a range of ABA-deficient mutants (notabilis, flacca and sitiens). However, in the mutants, concentrations of bound forms of ABA were similar to wild-type plants, and similar to free ABA concentrations. Conclusions: Although xylem concentrations of these bound ABA forms and ABA-GE suggest they have a limited physiological impact on ABA homeostasis in tomato, the methods developed here will allow a more complete understanding of ABA biochemistry and root-to-shoot signalling in species known to have higher concentrations of these compounds.",
+            "identifiers": ["oai:eprints.lancs.ac.uk:55410", "10.1186\/1746-4811-8-11"],
+            "language": {
+                "code": "en",
+                "id": 9,
+                "name": "English"
+            },
+            "relations": ["http:\/\/dx.doi.org\/10.1186\/1746-4811-8-11", "http:\/\/eprints.lancs.ac.uk\/55410\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Article", "PeerReviewed"],
+            "title": "Xylem sap collection and extraction methodologies to determine in vivo concentrations of ABA and its bound forms by gas chromatography-mass spectrometry (GC-MS)",
+            "topics": ["GE Environmental Sciences"],
+            "types": [],
+            "year": 2012,
+            "fulltextUrls": []
+        }, {
+            "id": 6181903,
+            "authors": ["McNeil, Maureen", "Franklin, Sarah"],
+            "contributors": ["Franklin, Sarah", "Lury, Celia", "Stacey, Jackie"],
+            "datePublished": "1991",
+            "identifiers": ["oai:eprints.lancs.ac.uk:55426", null],
+            "publisher": "Routledge",
+            "relations": ["http:\/\/eprints.lancs.ac.uk\/55426\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Contribution in Book\/Report\/Proceedings", "NonPeerReviewed"],
+            "title": "Science, feminism and cultural studies",
+            "topics": ["HM Sociology"],
+            "types": [],
+            "year": 1991,
+            "fulltextUrls": []
+        }, {
+            "id": 6181989,
+            "authors": ["Baker, Brian"],
+            "contributors": [],
+            "datePublished": "2012-07-01",
+            "description": "In this paper, the novel and film of Len Deighton\u0027s 1962 spy novel The IPCRESS File, along with Len Deighton\u0027s Action Cookbook (reprints of newspaper strips that were purposely designed for a young, male audience) will be analysed as diagnostic texts, revealing a peculiarly British (or even English) variant on a new affluent and aspirational masculinity formed in the late 1950s and the beginning of the 1960s, where the explicit disaffection of the previous decade (the \u2018Angry Young Man\u2019 or the bohemian) is mediated into consumption, the pleasures of degustation, and a laconic \u2018cool\u2019.",
+            "identifiers": ["oai:eprints.lancs.ac.uk:55514", "10.5699\/yearenglstud.42.2012.0030"],
+            "relations": ["http:\/\/dx.doi.org\/10.5699\/yearenglstud.42.2012.0030", "http:\/\/eprints.lancs.ac.uk\/55514\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Article", "PeerReviewed"],
+            "title": "\u201cYou\u2019re quite a gourmet, aren\u2019t you, Palmer?\u201d:masculinity and food in the spy fiction of Len Deighton",
+            "topics": ["PE English"],
+            "types": [],
+            "year": 2012,
+            "fulltextUrls": []
+        }, {
+            "id": 6181996,
+            "authors": ["Senior, Andrew", "Rietveld, M. T.", "Yeoman, T.K.", "Kosch, Michael"],
+            "contributors": [],
+            "datePublished": "2012-04-10",
+            "identifiers": ["oai:eprints.lancs.ac.uk:55524", "10.1029\/2011ja017267"],
+            "language": {
+                "code": "en",
+                "id": 9,
+                "name": "English"
+            },
+            "relations": ["http:\/\/dx.doi.org\/10.1029\/2011JA017267", "http:\/\/eprints.lancs.ac.uk\/55524\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Article", "PeerReviewed"],
+            "title": "The dependence of F-region electron heating on HF radio pump power: Measurements at EISCAT Troms\u00f8",
+            "topics": ["QC Physics"],
+            "types": [],
+            "year": 2012,
+            "fulltextUrls": []
+        }, {
+            "id": 10831,
+            "authors": ["Wodak, Ruth"],
+            "contributors": ["Steinmetz, Willibald"],
+            "datePublished": "2011",
+            "identifiers": ["oai:eprints.lancs.ac.uk:40786", null],
+            "language": {
+                "code": "en",
+                "id": 9,
+                "name": "English"
+            },
+            "publisher": "Oxford University Press",
+            "relations": ["http:\/\/eprints.lancs.ac.uk\/40786\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Contribution in Book\/Report\/Proceedings", "NonPeerReviewed"],
+            "title": "Suppression of the Nazi Past, Coded Languages, and Discourses of Silence: Applying the Discourse-Historical Approach to Post-War Anti-Semitism in Austria",
+            "topics": ["P Philology. Linguistics"],
+            "types": [],
+            "year": 2011,
+            "fulltextUrls": []
+        }, {
+            "id": 11081,
+            "authors": ["Chan, Paul", "Cooper, Rachel"],
+            "contributors": [],
+            "datePublished": "2010",
+            "description": "There is growing interest in future scenario planning of the construction industry but a disconnect between thinking about the future at the policy-making level and implementing real change. Constructing Futures: industry leaders and futures thinking in construction takes a thematic approach to the future of the UK construction industry by presenting the results of a series of in-depth interviews conducted with leading construction figures and structuring this material into chapters addressing the key contemporary issues in the industry. These high-profile figures are drawn from a wide range of stakeholder groups representing the realities of construction, including architects, client organisations (public-sector and private-sector), consultants, contractors, developers, lobby groups with special interests, policy makers, professional institutions, and trade unions. A total of 15 influential figures were interviewed for the book, from Sir Michael Latham and Bob White to Wayne Hemmingway and Kevin McCloud. Part One looks to the past by reviewing a series of foresight studies undertaken of the construction industry and re-presenting stories of our interviewees\u0027 lives to explain the development of leadership in the context of the construction industry. In Part Two, the authors look at the present and discuss two fundamental issues: sustainable development and governance of the construction industry. In Part Three the book concludes with an afterthought for the future, highlighting key lessons learnt putting forward a series of research questions derived from this scholarly reflection of \u2018futures thinking\u0027 in construction. Throughout, the authors juxtapose the views of the 15 influential figures interviewed with a review of the salient points found in the relevant and authoritative sources of theoretical literature, both in the mainstream literature and the field of construction management. This allows the reader to benefit from the practical insights of those interviews whilst gaining a rapid understanding of the key debates of the theoretical subject under scrutiny. \u2022 deconstructs the views of the leading thinkers in the construction industry \u2022 provides practical insights as into issues confronted when creating a sustainable future for the construction industry \u2022 an important contribution connecting the legacies of the past, challenges of the present and hope for the future of the construction industry",
+            "identifiers": ["oai:eprints.lancs.ac.uk:39797", "10.1002\/9781444327830"],
+            "publisher": "Wiley-Blackwell",
+            "relations": ["http:\/\/eprints.lancs.ac.uk\/39797\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Book\/Report\/Proceedings", "NonPeerReviewed"],
+            "title": "Constructing futures : industry leaders and future thinking in construction.",
+            "topics": ["AC Collections. Series. Collected works", "NA Architecture", "NC Drawing Design Illustration"],
+            "types": [],
+            "year": 2010,
+            "fulltextUrls": []
+        }, {
+            "id": 11031,
+            "authors": ["Bruce, Margaret", "Cooper, Rachel"],
+            "contributors": [],
+            "datePublished": "1997-06",
+            "description": "This title looks at the interface between marketing and design management, with particular focus on product development and corporate communications. It considers such issues as the role of design in the organisation, new product strategies and the effectiveness of the marketing\/design relationship. Cases cover retail, services and industrial products in order to assess best practice in design management for marketing.",
+            "identifiers": ["oai:eprints.lancs.ac.uk:39848", null],
+            "publisher": "Intl Thomson Business Press",
+            "relations": ["http:\/\/eprints.lancs.ac.uk\/39848\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Book\/Report\/Proceedings", "NonPeerReviewed"],
+            "title": "Marketing and design management.",
+            "topics": ["AC Collections. Series. Collected works", "NC Drawing Design Illustration"],
+            "types": [],
+            "year": 1997,
+            "fulltextUrls": []
+        }, {
+            "id": 11067,
+            "authors": ["Coleman, R.", "Clarkson, J.", "Dong, H.", "Cassim, J."],
+            "contributors": ["Cooper, Rachel"],
+            "datePublished": "2007",
+            "description": "A guide to inclusive design for all types of designers, providing guidelines, real examples and information sources. Inclusive design not only ensures that products, services, interfaces and environments are easier to use for those with special needs or limitations, but in doing so also makes them better for everyone. In Part 1 Design for Inclusivity, written by a team that has pioneered inclusive design practice internationally, reviews recent social trends and pressures that have pushed this subject to the fore, and assesses design responses to date in the international context. The authors make the business case for inclusive design and explain the formalisation of the approach in standards and legislation. Part 2 introduces case studies which describe transport, product, IT, housing and service projects, as well as industry-university collaborative projects, and highlight lessons that have been learned. Part 3 draws together tools, techniques and guidelines, and signposts the reader to key resources as well as offering practical advice on research methods, working with users and industry partners. The book concludes with contributions from leading design consultancies on inclusive design best practice. Contents: Introduction; Why inclusive design?, Roger Coleman, Julia Cassim, John Clarkson and Hua Dong; A growing movement, Jeremy Myerson; The business case, Roger Coleman, Alan Topalian, Hua Dong and John Clarkson; Market advantage - Practitioners\u0027 viewpoints, Hua Dong, Graham Pullin, Ingelese Nielson, Maria Benktzon, Olle Bobjer and Barry Tanner; Designer education - Case studies from graduate partnerships with industry, Julia Cassim and Hua Dong; Empowering designers and users - Case studies from the DBA Inclusive Design Challenge, Julia Cassim and Hua Dong; Involving older people in design, Alan Newell and Andrew Monk; Designer-oriented user research methods, Hua Dong, Collette Nicolle, Robert Brown and Julia Cassim; Practicalities of working with users, David Yielding and Julia Cassim; Countering design exclusion - Theory and practice, John Clarkson; Product evaluation - Practical approaches, John Clarkson, Carlos Cardoso and Ian Hosking; Using simulation in product evaluation, Carlos Cardoso and John Clarkson; Where do we find out?, Cherie Lebbon and Susan Hewer; Towards inclusion - Future challenges, Roger Coleman, Julia Cassim, John Clarkson and Hua Dong; Index. About the Author: Roger Coleman is Professor of Inclusive Design and Co-Director of the Helen Hamlyn Research Centre at the Royal College of Art. John Clarkson is director and principal investigator, and Hua Dong researcher at the Engineering Design Centre, Cambridge University. Julia Cassim is research co-ordinator on the Small Business Programme at Helen Hamlyn Centre, RCA.",
+            "identifiers": ["oai:eprints.lancs.ac.uk:39810", "10.2752\/175470710x12593419555685"],
+            "publisher": "Gower",
+            "relations": ["http:\/\/eprints.lancs.ac.uk\/39810\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Book\/Report\/Proceedings", "NonPeerReviewed"],
+            "title": "Design for inclusivity : a practical guide to accessible innovative and user-centred design.",
+            "topics": ["AC Collections. Series. Collected works", "NA Architecture", "NC Drawing Design Illustration"],
+            "types": [],
+            "year": 2007,
+            "fulltextUrls": []
+        }, {
+            "id": 10994,
+            "authors": ["Bruce, Margaret", "Cooper, Rachel", "Vazquez, Delia"],
+            "contributors": [],
+            "datePublished": "1999-05",
+            "description": "How small firms invest in design expertise to develop new products and corporate identities to communicate their services is little understood. The research reported here documented the ways in which small manufacturing and service companies use professional design skills and their approaches to managing product, engineering and graphic design. Many firms are wary about the potential cost of employing professional designers and are unsure about the commercial outcome of design investment. Thus, a need exists to enhance design awareness amongst small firms. Those firms that employed design effectively found that design contributed to their business success. However, expertise in sourcing, briefing, liaising and evaluating design were varied and so training small companies in design management skills is needed also. \u00d3 1999 Elsevier Science Ltd. All rights reserved Keywords: design management, design strategy",
+            "identifiers": ["oai:eprints.lancs.ac.uk:39896", "10.1016\/s0142-694x(98)00022-2"],
+            "relations": ["http:\/\/dx.doi.org\/10.1016\/S0142-694X(98)00022-2", "http:\/\/eprints.lancs.ac.uk\/39896\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Article", "PeerReviewed"],
+            "title": "Effective design management for small businesses.",
+            "topics": ["NC Drawing Design Illustration"],
+            "types": [],
+            "year": 1999,
+            "fulltextUrls": []
+        }, {
+            "id": 11024,
+            "authors": ["Cooper, Rachel"],
+            "contributors": ["Wilson, Ian"],
+            "datePublished": "1994-04",
+            "identifiers": ["oai:eprints.lancs.ac.uk:39853", null],
+            "publisher": "Pitman Publishing",
+            "relations": ["http:\/\/eprints.lancs.ac.uk\/39853\/"],
+            "repositories": [{
+                    "name": "Lancaster E-Prints",
+                    "id": 59
+                }],
+            "subjects": ["Contribution in Book\/Report\/Proceedings", "NonPeerReviewed"],
+            "title": "Marketing and design : a critical relationship.",
+            "topics": ["AC Collections. Series. Collected works", "NC Drawing Design Illustration"],
+            "types": [],
+            "year": 1994,
+            "fulltextUrls": []
+        }]
+}
