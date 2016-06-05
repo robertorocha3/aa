@@ -225,7 +225,7 @@ public class Collector {
     private void getCoreFiles() {
         runid = db.getNumberFromDB("runID", 0);
         initLog("core"); // runid has to be set first
-        String apiKey = "lWIs56bFaqSZ0cD8PLYdHg3OGUxyXVBK"; // TODO: remove this key when distributing the code
+        String apiKey = "type the core key here";
         rep = "Core";
         resetCounters();
         String jsonline = "";
