@@ -1,3 +1,3 @@
-Aggregator Analyser.
+Aggregator Analyzer.
 
-This is a software used to download and anlyse data from Academic Aggregators.
+This is a software that is used to download and anlyze data from Academic Aggregators.

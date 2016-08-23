@@ -2,8 +2,6 @@ package local.domain1;
 
 import gnu.getopt.Getopt;
 import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +12,7 @@ import org.jsoup.Jsoup;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -22,11 +21,13 @@ import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Collector {
-    boolean verbose,generateCharts,longerAnalysis;
+    boolean verbose,generateCharts;
 
     String coreFile = "files/json/core_test.json",baseFile = "files/json/base_selection.json";
     //String coreFile = "files/json/core_selection_long.json",baseFile = "files/json/base_selection_long.json";
@@ -47,17 +48,13 @@ public class Collector {
 
     Db db;
 
-    Logger logger;
-
     public static void main(String[] args) {
         new Collector(args);
     }
 
     public Collector(String[] args){
-
         verbose=false;
         generateCharts =false;
-        longerAnalysis = false;
         allExt = new ArrayList();
         successExt = new ArrayList();
         allUrlDomains = new ArrayList();
@@ -69,7 +66,7 @@ public class Collector {
         UrlIDs = new ArrayList();
         IdIDs = new ArrayList();
         fieldList = new ArrayList();
-        urlAddressList = new HashSet<>();
+        urlAddressList = new HashSet<String>();
         extensionsAndDomains = new MultiValueMap();
         domainsAndExtensions = new MultiValueMap();
         successfulExtensionsAndDomains = new MultiValueMap();
@@ -84,13 +81,13 @@ public class Collector {
         e_removeLeadingAndTrailingSpaces ="n";
         db = new Db();
 
-        Getopt g = new Getopt("Collector", args, "vcr:l"); // the colon (:) means that the option letter preceding it requires an argument
+        Getopt g = new Getopt("Collector", args, "vcr:");
         int c;
         String arg = "";
         while ((c = g.getopt()) != -1){
             switch(c){
                 case 'v':
-                    System.out.println("Verbose mode selected.");
+                    System.out.print("Verbose mode selected.");
                     verbose = true;
                     break;
                 case 'c':
@@ -99,18 +96,14 @@ public class Collector {
                 case 'r':
                     arg = g.getOptarg();
                     break;
-                case 'l':
-                    longerAnalysis = true;
-                    break;
                 default:
-                    System.out.println("Program syntax: Collector -r <core|base|both> -v -c -l <y|n>");
+                    System.out.println("Program syntax: Collector -r <core|base|both> -v -c");
                     System.out.println("-r options (mandatory):");
                     System.out.println("    core: collect and analyze data from http://core.ac.uk/");
                     System.out.println("    base: collect and analyze data from http://base-search.net/");
                     System.out.println("    both: collect and analyze data from both repositories");
                     System.out.println("-v (optional) = verbose mode");
                     System.out.println("-c (optional) = generate charts at the end");
-                    System.out.println("-l (optional) = longer analysis (more or fewer files to download).The default is n (no).");
                     break;
             }
         }
@@ -119,52 +112,17 @@ public class Collector {
         }else if (arg.equals("base")){
             this.getBaseFiles();
         }else if (arg.equals("both")){
-            //this.getBaseFiles();
-            //this.getCoreFiles();
-            //getURLsFromPage("http://digitalscholarship.unlv.edu/award/24");
-            //getURLsFromPage("http://discovery.ucl.ac.uk/1298244/");
-            args[1] = "base";
-            new Thread(new RunIt(args)).start();
             this.getCoreFiles();
-
-            //args[1] = "core";
-            //new Thread(new RunIt(args)).start();
+            //this.getBaseFiles();
+            //this.validateThis("files/base/1298243.pdf");
+            //this.validateThis("files/base/yorkdesigningve's.pdf");
+            //this.validateThis("files/base/test.pdf");
+            //this.validateThis("files/base/c3dt52279b.pdf");
         }
-    }
-    public class RunIt implements Runnable {
-        //private Logger logger = LoggerFactory.getLogger(Collector.class);
-        private String[] args;
-        public RunIt(String[] args) {
-            this.args = args;
-        }
-        public void run() {
-            try {   // this is to give some time for the other thread to write its first record and create its id in
-                // the db so this thread can get the next id instead of the same one (if both run at the same time)
-                Thread.sleep(10000); // 8000 also works but I am placing 10000 just in case if it is ran by a slower computer
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            new Collector(args);
-        }
-    }
-
-    private void initLog(String rep){   // set up logging...
-        logger = Logger.getLogger("fullrun_"+rep+"_"+runid);
-        Properties prop = new Properties();
-        prop.setProperty("log4j.logger.fullrun_"+rep+"_"+runid,"DEBUG, WORKLOG");
-        prop.setProperty("log4j.appender.WORKLOG","org.apache.log4j.FileAppender");
-        prop.setProperty("log4j.appender.WORKLOG.File", "files/logs/fullrun_"+rep+"_"+runid+".log");
-        prop.setProperty("log4j.appender.WORKLOG.layout","org.apache.log4j.PatternLayout");
-        prop.setProperty("log4j.appender.WORKLOG.layout.ConversionPattern","%d %c{1} - %m%n");
-        prop.setProperty("log4j.appender.WORKLOG.Threshold","INFO");
-        PropertyConfigurator.configure(prop);
-        //logger.info("info test id=" + id);
-        //logger.error("error test id=" + id);
     }
 
     private void getBaseFiles() {
         runid = db.getNumberFromDB("runID",0);
-        initLog("base"); // runid has to be set first
         rep = "Base";
         resetCounters();
         String identification="",urlAddress = "";
@@ -172,17 +130,17 @@ public class Collector {
         JSONArray array;
         startTime = System.currentTimeMillis();
         try {
-            logger.info("\n---------------------------------------- Getting the BASE files (run ID: "+runid+")...\n");
-            logger.info("Verbose mode: "+verbose);
-            logger.info("Generate charts: "+generateCharts);
-            logger.info("Start time: "+sdf.format(new Date(startTime)));
+            System.out.println("\n-------------------- Getting the BASE files...\n");
+            System.out.println("Verbose mode: "+verbose);
+            System.out.println("Generate charts: "+generateCharts);
+            System.out.println("Start time: "+sdf.format(new Date(startTime)));
             mainObject = new JSONObject(new JSONTokener(new FileReader(baseFile)));
             //baseObject = new JSONObject(new JSONTokener(new FileReader(new String (baseFile.getBytes("UTF-8"), Charset.forName("UTF-8")))));
             array = (JSONArray) mainObject.get("records");
 
             for (int i = 0; i < array.length(); i++) {
                 mainObject = (JSONObject) array.getJSONObject(i).get("record");
-                //logger.info("baseobject: "+baseObject.toString());
+                //System.out.println("baseobject: "+baseObject.toString());
                 if (mainObject.has("title")) {
                     identification = mainObject.getString("title");
                 }else if(mainObject.has("description")){
@@ -190,9 +148,9 @@ public class Collector {
                 }else{
                     identification = mainObject.getJSONArray("subjects").getString(0);
                 }
-                logger.info("\n---------------------------------------- Working on record # " +(numberOfRecords+1)+ " from BASE ----------------------------------------");
+                System.out.println("\n-------------------- Working on record # " +(numberOfRecords+1)+ " from BASE --------------------");
                 findUrls(mainObject);
-                logger.info("");
+                System.out.println("");
                 if (!urlAddressList.isEmpty()){ // download the file(s)...
                     Iterator it = urlAddressList.iterator();
                     for (int u =0;u<urlAddressList.size();u++) {
@@ -216,16 +174,15 @@ public class Collector {
                 fieldList.clear();
             }
         } catch (Exception e) {
-            logger.error("ERROR:",e);
+            e.printStackTrace();
         }
         finishTime = System.currentTimeMillis();
         showSummary();
     }
 
     private void getCoreFiles() {
-        runid = db.getNumberFromDB("runID", 0);
-        initLog("core"); // runid has to be set first
         String apiKey = "lWIs56bFaqSZ0cD8PLYdHg3OGUxyXVBK"; // TODO: remove this key when distributing the code
+        runid = db.getNumberFromDB("runID", 0);
         rep = "Core";
         resetCounters();
         String jsonline = "";
@@ -236,10 +193,10 @@ public class Collector {
         String urlAddress;
         startTime = System.currentTimeMillis();
         try {
-            logger.info("\n---------------------------------------- Getting the CORE files (run ID: "+runid+")...\n");
-            logger.info("Verbose mode: " + verbose);
-            logger.info("Generate charts: " + generateCharts);
-            logger.info("Start time: " + sdf.format(new Date(startTime)));
+            System.out.println("\n-------------------- Getting the CORE files...\n");
+            System.out.println("Verbose mode: " + verbose);
+            System.out.println("Generate charts: " + generateCharts);
+            System.out.println("Start time: " + sdf.format(new Date(startTime)));
             BufferedReader reader = new BufferedReader(new FileReader(coreFile));
             while ((jsonline = reader.readLine()) != null) { // line (individual 10-record list)
                 mainObject = new JSONObject(jsonline);
@@ -247,7 +204,7 @@ public class Collector {
                 for (int i = 0; i < array.length(); i++) { // record
                     mainObject = array.getJSONObject(i);
                     fieldList = sortList(mainObject.keys());
-                    logger.info("---------------------------------------- Working on record # " + (numberOfRecords + 1) + " from CORE ----------------------------------------\n");
+                    System.out.println("-------------------- Working on record # " + (numberOfRecords + 1) + " from CORE --------------------\n");
                     findUrls(mainObject);
                     identification = mainObject.getString(fieldList.get(0));
                     urlAddressList.add("https://core.ac.uk:443/api-v2/articles/get/" + identification + "/download/pdf?apiKey=" + apiKey);
@@ -261,7 +218,7 @@ public class Collector {
                             file = urlAddress.substring(urlAddress.lastIndexOf("/") + 1);
                             ext = urlAddress.substring(urlAddress.lastIndexOf(".") + 1);
                         }
-                        //logger.info("fieldList.size: "+fieldList.size());
+                        //System.out.println("fieldList.size: "+fieldList.size());
                         preDownload(
                                 "files/core/",
                                 new URL(urlAddress).getHost(),
@@ -281,8 +238,7 @@ public class Collector {
             finishTime = System.currentTimeMillis();
             showSummary();
         }catch(Exception e){
-            //Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, e);
-            logger.error("ERROR:",e);
+            Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -294,138 +250,65 @@ public class Collector {
             key = keys.next();
             if (rep.equals("Base")){
                 fieldList.add(key);
-                countIDs(key);
             }
             value = mainObject.get(key);
             if (value instanceof JSONArray) {
                 for(int v=0;v<((JSONArray) value).length();v++) {
-                    //fieldList.add(key);
-                    //countIDs(key);
-                    urlAddress = checkUrl(((JSONArray) value).getString(v));
+                    urlAddress = checkUrl(((JSONArray) value).getString(v),key);
                     if (!urlAddress.equals("")){
-                        logger.info("Found a file named \""+((JSONArray) value).getString(v)+"\" in the \""+key+"\" key");
                         urlAddressList.add(urlAddress);
-                    }else{
-                        if (longerAnalysis) {
-                            getURLsFromPage(((JSONArray) value).getString(v));
-                        }
                     }
                 }
-            }else if (value instanceof JSONObject) {
+            }else if (value instanceof JSONObject) { // contentProvider
                 innerkeys = ((JSONObject) value).keys();
                 while (innerkeys.hasNext()){
                     innerkey = innerkeys.next();
                     fieldList.add(innerkey);
-                    countIDs(innerkey);
-                    urlAddress = checkUrl(((JSONObject) value).getString(innerkey));
+                    urlAddress = checkUrl(((JSONObject) value).getString(innerkey),key);
                     if (!urlAddress.equals("")){
-                        logger.info("Found a file named \""+((JSONObject) value).getString(innerkey)+"\" in the \""+key+"\" key");
                         urlAddressList.add(urlAddress);
-                    }else{
-                        if (longerAnalysis) {
-                            getURLsFromPage(((JSONObject) value).getString(innerkey));
-                        }
                     }
                 }
-            }else if(value instanceof String){
-                //fieldList.add(key);
-                //countIDs(key);
-                urlAddress = checkUrl((String) value);
+            }else if(value instanceof String){ // title and url
+                urlAddress = checkUrl((String) value,key);
                 if (!urlAddress.equals("")){
-                    logger.info("Found a file named \""+value+"\" in the \""+key+"\" key");
                     urlAddressList.add(urlAddress);
-                }else{
-                    if (longerAnalysis) {
-                        getURLsFromPage((String) value);
-                    }
                 }
             }
         }
-        //countIDs(fieldList);
+        countIDs(fieldList);
     }
 
-    private void countIDs(String field){
-        if (field.contains("title")) {
-            TitleIDs.add(field);
-        } else if (field.contains("url")) {
-            UrlIDs.add(field);
-        } else if (field.equalsIgnoreCase("id")) {
-            IdIDs.add(field);
-        }
-    }
-    /*
-    private void countIDs(ArrayList fieldList){
-        String key="";
-        for (int f=0;f<fieldList.size();f++){
-            key=fieldList.get(f).toString().toLowerCase();
-            if (key.contains("title")) {
-                TitleIDs.add(key);
-            } else if (key.contains("url")) {
-                UrlIDs.add(key);
-            } else if (key.equalsIgnoreCase("id")) {
-                IdIDs.add(key);
-            }
-        }
-    }
-    */
-    private String checkUrl(String value) throws MalformedURLException {
+    private String checkUrl(String value, String key) throws MalformedURLException {
         String urlAddress = "";
         Pattern p = Pattern.compile("\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]",Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(value);
         if (m.find()){  // if the string has a url, change its value to the url's address...
             value=m.group(0);
-            String testvalue = value.toLowerCase(); // url
-            if ((testvalue.endsWith(".pdf")) ||
-                    (testvalue.endsWith(".jpg")) ||
-                    (testvalue.endsWith(".doc")) ||
-                    (testvalue.endsWith(".docx")) ||
-                    //(testvalue.endsWith(".xml")) ||
-                    //(testvalue.endsWith(".gif")) ||
-                    (testvalue.endsWith(".tif")) ||
-                    (testvalue.endsWith(".wav")) ||
-                    (testvalue.endsWith(".gz")) ||
-                    (testvalue.endsWith(".zip")) ||
-                    (testvalue.endsWith(".xls")) ||
-                    (testvalue.endsWith(".ppt")) ||
-                    (testvalue.endsWith(".pptx"))) {
-                urlAddress = value;
-                String extension = urlAddress.substring(urlAddress.lastIndexOf(".")+1);
-                String domain = new URL(urlAddress).getHost();
-                allExt.add(extension);
-                allUrlDomains.add(domain);
-                extensionsAndDomains.put(extension,domain);
-                domainsAndExtensions.put(domain,extension);
-            }
+        }
+        String testvalue = value.toLowerCase();
+        if ((testvalue.endsWith(".pdf")) ||
+                (testvalue.endsWith(".jpg")) ||
+                (testvalue.endsWith(".doc")) ||
+                (testvalue.endsWith(".docx")) ||
+                (testvalue.endsWith(".xml")) ||
+                (testvalue.endsWith(".gif")) ||
+                (testvalue.endsWith(".tif")) ||
+                (testvalue.endsWith(".wav")) ||
+                (testvalue.endsWith(".gz")) ||
+                (testvalue.endsWith(".xls")) ||
+                (testvalue.endsWith(".ppt")) ||
+                (testvalue.endsWith(".pptx"))) {
+            urlAddress = value;
+            System.out.println("Found a file \""+urlAddress+"\" in the \""+key+"\" key");
+            String extension = urlAddress.substring(urlAddress.lastIndexOf(".")+1);
+            String domain = new URL(urlAddress).getHost();
+            allExt.add(extension);
+            allUrlDomains.add(domain);
+            extensionsAndDomains.put(extension,domain);
+            domainsAndExtensions.put(domain,extension);
         }
         return urlAddress;
-    }
-
-    private void getURLsFromPage(String urlAddress){
-        Connection.Response conn = null;
-        try {    // check if the file is ready to be downloaded...
-            conn = Jsoup.connect(urlAddress)
-                    .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
-                    .timeout(10000)
-                    .ignoreContentType(true)
-                    .followRedirects(true)
-                    .ignoreHttpErrors(true)
-                    .execute();
-        } catch (Exception e) {}
-        if (conn!=null){
-            String[] lines = conn.body().split("\n");
-            String url = "";
-            try {
-                for(String line:lines){
-                    url = checkUrl(line);
-                    if (!url.equals("")){
-                        logger.info("Found url \""+url+"\" in page "+urlAddress);
-                        urlAddressList.add(url);
-                    }
-                }
-            } catch (MalformedURLException e) {
-                logger.error("ERROR:",e);
-            }
-        }
     }
 
     private void preDownload(String destPath,String domain,String extension,String urlAddress,ArrayList fieldList,String fileName,JSONObject mainObject,String identification){
@@ -438,110 +321,107 @@ public class Collector {
         File file = null;
         feedback = "";
         boolean downloadPerformed = false;
-        //if (shouldBeDownloaded(0,destPath,fileName,null)) {   // this would defeat the purpose of comparing the last modification date of the remote file with the local one's
-            if (!urlAddress.equals("")) {                       // but makes the run a lot faster if all or many of the files have already been downloaded
-                logger.info("Starting download process for url: " + urlAddress + "...");
-                allUrlDomains.add(domain);
-                allExt.add(extension);
-                extensionsAndDomains.put(extension, domain);
-                domainsAndExtensions.put(domain, extension);
-                Connection.Response conn = null;
-                try {    // check if the file is ready to be downloaded...
-                    conn = Jsoup.connect(urlAddress)
-                            .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
-                            .timeout(10000)
-                            .ignoreContentType(true)
-                            .followRedirects(true)
-                            .ignoreHttpErrors(true)
-                            .execute();
-                } catch (Exception e) {
-                }
-                try {
-                    if (conn != null) {  // if the url is available...
-                        statusCode = conn.statusCode();
-                        statusMessage = conn.statusMessage();
-                        downStartTime = System.currentTimeMillis();
-                        if (statusCode == 200) {    // if the file is downloadable...
-                            String remoteFileLastModDate = conn.headers().get("Last-Modified");
-                            if (remoteFileLastModDate == null) { // if the remote file's http head doesn't have a Last-Modified field, download the file anyway (it will overwrite the file if it already exists)
-                                logger.info("Could not determine the last time the remote file was modified. Downloading it anyway...");
+
+        if (!urlAddress.equals("")) {
+            System.out.println("Starting download process for url: " + urlAddress+"...");
+            allUrlDomains.add(domain);
+            allExt.add(extension);
+            extensionsAndDomains.put(extension,domain);
+            domainsAndExtensions.put(domain,extension);
+            Connection.Response conn = null;
+            try {    // check if the file is ready to be downloaded...
+                conn = Jsoup.connect(urlAddress)
+                        .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
+                        .timeout(10000)
+                        .ignoreContentType(true)
+                        .followRedirects(true)
+                        .ignoreHttpErrors(true)
+                        .execute();
+            } catch (Exception e) {}
+            try {
+                if (conn != null) {  // if the url is available...
+                    statusCode = conn.statusCode();
+                    statusMessage = conn.statusMessage();
+                    downStartTime = System.currentTimeMillis();
+                    if (statusCode == 200) {    // if the file is downloadable...
+                        String remoteFileLastModDate = conn.headers().get("Last-Modified");
+                        if (remoteFileLastModDate == null) { // if the remote file's http head doesn't have a Last-Modified field, download the file anyway (it will overwrite the file if it already exists)
+                            System.out.println("Could not determine the last time the remote file was modified. Downloading it anyway...");
+                            performDownload(destPath, fileName, urlAddress);
+                            System.out.println("Download status message: " + statusMessage+"\n");
+                            downloadPerformed = true;
+                        } else {
+                            System.out.println("Remote file's last modification date: " + remoteFileLastModDate);
+                            if (shouldBeDownloaded(new SimpleDateFormat("E, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH).parse(remoteFileLastModDate).getTime() / 1000, destPath, fileName,conn.headers().get("Content-Length"))) {
                                 performDownload(destPath, fileName, urlAddress);
-                                logger.info("Download status message: " + statusMessage + "\n");
+                                System.out.println("Download status message: " + statusMessage+"\n");
                                 downloadPerformed = true;
-                            } else {
-                                logger.info("Remote file's last modification date: " + remoteFileLastModDate);
-                                if (shouldBeDownloaded(new SimpleDateFormat("E, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH).parse(remoteFileLastModDate).getTime() / 1000, destPath, fileName, conn.headers().get("Content-Length"))) {
-                                    performDownload(destPath, fileName, urlAddress);
-                                    logger.info("Download status message: " + statusMessage + "\n");
-                                    downloadPerformed = true;
-                                }
                             }
-                        } else {
-                            logger.info("");
-                            logger.info("** Could not download the file! **");
-                            logger.info("Found a " + statusCode + " error when retrieving file named " + fileName);
-                            logger.info("Failed url: " + urlAddress);
-                            logger.info("Download status message: " + statusMessage + "\n");
-                            downloadErrorCodes.add(Integer.toString(statusCode));
-                        }
-                        downFinishTime = System.currentTimeMillis();
-                        if (downloadPerformed) {
-                            logger.info("Download duration: " + getDurationString(downFinishTime - downStartTime) + "\n");
                         }
                     } else {
-                        logger.info("The url \"" + urlAddress + "\" could not be resolved!");
+                        System.out.println("");
+                        System.out.println("** Could not download the file! **");
+                        System.out.println("Found a " + statusCode + " error when retrieving the file named " + fileName);
+                        System.out.println("Failed url: " + urlAddress);
+                        System.out.println("Download status message: " + statusMessage+"\n");
+                        downloadErrorCodes.add(Integer.toString(statusCode));
                     }
-
-                    file = new File(destPath + fileName);
-                    if (file.exists()) {
-                        if (validateThis(destPath + fileName).equals("valid")) { // perform the post-download validation
-                            success = "y";
-                        } else {
-                            success = "n";
-                        }
-                    } else {
-                        this.getFileInfo(destPath + fileName);
-                        success = "n";
-                        fileSize = 0;
+                    downFinishTime = System.currentTimeMillis();
+                    if (downloadPerformed){
+                        System.out.println("Download duration: " + getDurationString(downFinishTime - downStartTime)+"\n");
                     }
-
-                    if (success.equals("y")) {   // don't perform the analysis if there's no valid file
-                        logger.info("Download completed successfully!");
-                        fileSize = file.length();
-                        metaTime = System.currentTimeMillis();
-                        analyzeMetadata(mainObject, destPath + fileName, fieldList, identification);
-                        metaTime = System.currentTimeMillis() - metaTime;
-                        logger.info("Comparison duration: " + getDurationString(metaTime) + "\n");
-                        succeededDownloads++;
-                        successExt.add(extension);
-                        successUrlDomains.add(domain);
-                        successfulExtensionsAndDomains.put(extension, domain);
-                        successfulDomainsAndExtensions.put(domain, extension);
-                    } else {
-                        logger.info("Download failed.");
-                    }
-                    addToDB("addDownload", new String[]{
-                            Integer.toString(numberOfRecords + 1),
-                            fileName,
-                            urlAddress,
-                            String.valueOf(fileSize),
-                            domain,
-                            String.valueOf(statusCode),
-                            statusMessage,
-                            success,
-                            String.valueOf(downStartTime),
-                            String.valueOf(downFinishTime),
-                            extension,
-                            existingFile
-                    });
-                    numberOfFiles++;
-                } catch (Exception e) {
-                    logger.error("ERROR:", e);
+                } else {
+                    System.out.println("The url \"" + urlAddress + "\" could not be resolved!");
                 }
-            } else {
-                logger.info("\nThe record named \"" + identification + "\" does not have a file to be downloaded...");
+
+                file = new File(destPath + fileName);
+                if (file.exists()) {
+                    if (feedback.equals("valid")) { // if the pre-download validation was valid...
+                        success = "y";
+                    }else if (validateThis(destPath +fileName).equals("valid")){ // only perform the post-download validation if the pre-download validation was not valid...
+                        success = "y";
+                    } else {
+                        success = "n";
+                    }
+                } else {
+                    this.getFileInfo(destPath + fileName);
+                    success = "n";
+                    fileSize = 0;
+                }
+
+                if (success.equals("y")){
+                    fileSize = file.length();
+                    metaTime = System.currentTimeMillis();
+                    analyzeMetadata(mainObject, destPath + fileName, fieldList, identification);
+                    metaTime = System.currentTimeMillis() - metaTime;
+                    System.out.println("Comparison duration: " + getDurationString(metaTime)+"\n");
+                    succeededDownloads++;
+                    successExt.add(extension);
+                    successUrlDomains.add(domain);
+                    successfulExtensionsAndDomains.put(extension,domain);
+                    successfulDomainsAndExtensions.put(domain,extension);
+                }
+                addToDB("addDownload", new String[]{
+                        Integer.toString(numberOfRecords + 1),
+                        fileName,
+                        urlAddress,
+                        String.valueOf(fileSize),
+                        domain,
+                        String.valueOf(statusCode),
+                        statusMessage,
+                        success,
+                        String.valueOf(downStartTime),
+                        String.valueOf(downFinishTime),
+                        extension,
+                        existingFile
+                });
+                numberOfFiles++;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        //}
+        }else{
+            System.out.println("\nThe record named \"" + identification + "\" does not have a file to be downloaded...");
+        }
         addToDB("addRecord", new String[]{
                 Integer.toString(numberOfRecords + 1),
                 fileName,
@@ -555,26 +435,40 @@ public class Collector {
         resetPredownloadFields();
     }
 
+    private void countIDs(ArrayList fieldList){
+        String key="";
+        for (int f=0;f<fieldList.size();f++){
+            key=fieldList.get(f).toString().toLowerCase();
+            if (key.contains("title")) {
+                TitleIDs.add(key);
+            } else if (key.contains("url")) {
+                UrlIDs.add(key);
+            } else if (key.equalsIgnoreCase("id")) {
+                IdIDs.add(key);
+            }
+        }
+    }
+
     private void performDownload(String destPath,String fileName,String urlAddress){    // perform the actual download...
         try {
-            logger.info("\nDownloading file named \"" + fileName +" from "+ urlAddress+"\"...");
+            System.out.println("\nDownloading file named \"" + fileName +" from "+ urlAddress+"\"...");
             URL url = new URL(urlAddress);
             InputStream in = url.openStream();
             Files.copy(in, Paths.get(destPath+fileName), StandardCopyOption.REPLACE_EXISTING);
             in.close();
         } catch (Exception e) {
-            logger.error("ERROR:",e);
+            e.printStackTrace();
         }
     }
 
     private boolean shouldBeDownloaded(long httpLastModDate, String destPath, String fileName, String length){
         boolean response = false;
         File file = new File(destPath+fileName);
-        logger.info("");
+        System.out.println("");
         if (file.exists()) {
             if (length!=null){
                 if (!Long.toString(file.length()).equals(length)){
-                    logger.info("The remote file has a different size ("+length+") than the local one's ("+file.length()+").");
+                    System.out.println("The remote file has a different size ("+length+") than the local one's ("+file.length()+").");
                     response = true;
                 }else{
                     if (!validateThis(destPath+fileName).equals("valid")){   // pre-download validation...
@@ -582,22 +476,20 @@ public class Collector {
                     }
                 }
             }
-            logger.info("The file "+fileName+" has already been downloaded.");
+            System.out.println("The file "+fileName+" has already been downloaded.");
             long fileLastModDate = file.lastModified()/1000;
             if (verbose) {
-                logger.info("last time the remote file was modified (unix format): " + httpLastModDate);
-                logger.info("Last time the local file was modified: " + fileLastModDate);
+                System.out.println("last time the remote file was modified (unix format): " + httpLastModDate);
+                System.out.println("Last time the local file was modified: " + fileLastModDate);
             }
-            if (httpLastModDate!=0) {
-                if (httpLastModDate > fileLastModDate) {
-                    logger.info("The remote file is newer than the local one.");
-                    response = true;
-                } else {
-                    existingFile = "y";
-                }
+            if (httpLastModDate>fileLastModDate){
+                System.out.println("The remote file is newer than the local one.");
+                response = true;
+            }else{
+                existingFile ="y";
             }
         }else{
-            logger.info("The file "+fileName+" has not been downloaded yet.");
+            System.out.println("The file "+fileName+" has not been downloaded yet.");
             response = true;
         }
         return response;
@@ -607,18 +499,18 @@ public class Collector {
         long startTime = System.currentTimeMillis();
         feedback = "not valid";
         HashMap<String, String> map = new HashMap<String,String>();
-        //map.put("gif","GIF-hul");
+        map.put("gif","GIF-hul");
         map.put("gz","GZIP-kb");
         map.put("jpg","JPEG-hul");
         map.put("pdf","PDF-hul");
         map.put("tif","TIFF-hul");
         map.put("wav","WAVE-hul");
-        //map.put("xml","XML-hul");
+        map.put("xml","XML-hul");
         Map.Entry entry;
         Set mapSet = map.entrySet();
         Iterator mapIterator = mapSet.iterator();
         String fileKey = "",fileValue = "",module = "";
-        logger.info("Validating file named: "+filename);
+        System.out.println("Validating file named: "+filename);
         while (mapIterator.hasNext()) {
             entry = (Map.Entry) mapIterator.next();
             fileKey = (String) entry.getKey();
@@ -627,19 +519,23 @@ public class Collector {
                 module = fileValue;
             }
             if (verbose){
-                logger.info("key: "+fileKey);
-                logger.info("value: "+fileValue);
+                System.out.println("key: "+fileKey);
+                System.out.println("value: "+fileValue);
             }
         }
-        logger.info("Using module: "+module);
+        System.out.println("Using module: "+module);
         if (!module.equals("")) {
             try {
-                Process p = Runtime.getRuntime().exec("jhove.bat -m " + module+" "+filename);
+                String command = "jhove.bat -m " + module+" "+filename;
+                //System.out.println("command: "+command);
+                //Process p = Runtime.getRuntime().exec("jhove.bat -m " + module+" "+filename);
+                Process p = Runtime.getRuntime().exec(command);
                 p.waitFor(2, TimeUnit.SECONDS);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line = "";
                 if (reader.ready()) {
                     while ((line = reader.readLine()) != null) {
+                        //System.out.println("line: "+line);
                         if (line.contains("SignatureMatches:")){
                             if (reader.readLine().contains(module)){
                                 feedback = "valid";
@@ -651,13 +547,13 @@ public class Collector {
                 reader.close();
                 p.destroy();
             } catch (Exception e) {
-                logger.error("ERROR:",e);
+                e.printStackTrace();
             }
         }else{
             feedback = "not found";
         }
-        logger.info("Validation duration: "+getDurationString(System.currentTimeMillis()-startTime));
-        logger.info("Status: "+feedback+"\n");
+        System.out.println("Validation duration: "+getDurationString(System.currentTimeMillis()-startTime));
+        System.out.println("Status: "+feedback+"\n");
         return feedback;
     }
 
@@ -695,12 +591,12 @@ public class Collector {
         Iterator<String> keys;
         String mainkey="";
         String key="";
-        HashMap fileFields = this.getFileInfo(file); // the extraction is made here in order to avoid it from being done multiple times in compareRecord()
-        logger.info("Comparing the record's metadata with the one from the file named "+file);
+        HashMap fileFields = this.getFileInfo(file);
+        System.out.println("Comparing the record's metadata with the one from the file named "+file);
         for (int f = 0; f < fieldList.size(); f++) {    // cycle through the record
             mainkey = (String) fieldList.get(f);
             if (verbose) {
-                logger.info("mainkey: "+mainkey);
+                System.out.println("mainkey: "+mainkey);
             }
             if (mainObject.has(mainkey)) {
                 if (mainObject.get(mainkey) instanceof JSONObject) {
@@ -709,18 +605,18 @@ public class Collector {
                     while (keys.hasNext()) {
                         key = keys.next();
                         if (verbose) {
-                            logger.info("key: " + mainkey + " and value: " + object.getString(key));
+                            System.out.println("key: " + mainkey + " and value: " + object.getString(key));
                         }
                         hasaMatch=compareRecord(mainkey+":"+key, object.getString(key),file, title,fileFields);
                     }
                 } else if (mainObject.get(mainkey) instanceof JSONArray) {
                     array = mainObject.getJSONArray(mainkey);
                     if (verbose) {
-                        logger.info("size: "+array.length());
+                        System.out.println("size: "+array.length());
                     }
                     for (int a = 0; a < array.length(); a++) {
                         if (verbose) {
-                            logger.info("key: "+mainkey+" and value: "+array.getString(a));
+                            System.out.println("key: "+mainkey+" and value: "+array.getString(a));
                         }
                         hasaMatch=compareRecord(mainkey, array.getString(a),file, title,fileFields);
                     }
@@ -730,8 +626,8 @@ public class Collector {
             }
         }
         if (!hasaMatch){
-            logger.info("");
-            logger.info("No matches were found.");
+            System.out.println("");
+            System.out.println("No matches were found.");
         }
         //verbose = false;
     }
@@ -748,8 +644,8 @@ public class Collector {
             fileKey = (String) entry.getKey();
             fileValue = (String) entry.getValue();
             if (verbose) {
-                logger.info("filekey: " + fileKey + " and filevalue: " + fileValue);
-                logger.info("recordKey: " + recordKey + " and recordValue: " + recordValue);
+                System.out.println("filekey: " + fileKey + " and filevalue: " + fileValue);
+                System.out.println("recordKey: " + recordKey + " and recordValue: " + recordValue);
             }
             matchReasons+=findAMatch(recordValue,fileValue,recordValue,"literalMatches");
             matchReasons+=findAMatch(recordValue.replaceAll("\\s+"," "),fileValue.replaceAll("\\s+"," "),recordValue,"removeMultipleSpaces");
@@ -758,13 +654,13 @@ public class Collector {
             matchReasons+=findAMatch(Normalizer.normalize(recordValue, Normalizer.Form.NFD).replaceAll("[^\\p{L}\\p{Nd}]+",""),
                     Normalizer.normalize(fileValue, Normalizer.Form.NFD).replaceAll("[^\\p{L}\\p{Nd}]+",""),recordValue,"leaveOnlyNumbersAndLetters");
             if (!matchReasons.equals("")){
-                logger.info("");
-                logger.info("*** MATCH FOUND ***");
-                logger.info("Key \"" + recordKey + "\" from record titled \"" + title + "\" ");
-                logger.info("matches key \"" + fileKey+"\" from file \""+filename+"\"");
-                logger.info("--- value from record: \""+recordValue+"\"");
-                logger.info("--- value from file: \""+fileValue+"\"");
-                logger.info(matchReasons);
+                System.out.println("");
+                System.out.println("*** MATCH FOUND ***");
+                System.out.println("Key \"" + recordKey + "\" from record titled \"" + title + "\" ");
+                System.out.println("matches key \"" + fileKey+"\" from file \""+filename+"\"");
+                System.out.println("--- value from record: \""+recordValue+"\"");
+                System.out.println("--- value from file: \""+fileValue+"\"");
+                System.out.print(matchReasons);
                 matchReasons="";
                 numberOfMatches++;
                 addToDB(
@@ -840,30 +736,32 @@ public class Collector {
     }
 
     private HashMap getFileInfo(String pdfFile) {
+        String command = "";
         Process p;
-        String key="";
+        String field="";
         String value="";
         HashMap<String, String> map = new HashMap<String,String>();
         try {
-            p = Runtime.getRuntime().exec("exiftool "+pdfFile);
-            p.waitFor(2,TimeUnit.SECONDS);
+            command = "exiftool --*Profile*Blob* --*History* --*Mendeley* --*Property* --*Manifest* --*Page*Image* --Headline "+pdfFile;
+            p = Runtime.getRuntime().exec(command);
+            p.waitFor();
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line = "";
             if (reader.ready()) {
                 while ((line = reader.readLine()) != null) {
-                    key = line.split(":", 2)[0];
+                    field = line.split(":", 2)[0];
                     value = line.split(":", 2)[1];
                     if (verbose) {
-                        logger.info("key: " + key + " and value: " + value);
+                        System.out.println("field: " + field + " and value: " + value);
                     }
-                    map.put(key.replaceAll("\\s+$", ""), value.replaceFirst(" ", ""));
+                    map.put(field.replaceAll("\\s+$", ""), value.replaceFirst(" ", ""));
                     numberOfFIleFields++;
                 }
             }
             reader.close();
             p.destroy();
         } catch (Exception e) {
-            logger.error("ERROR:",e);
+            e.printStackTrace();
         }
         return map;
     }
@@ -1016,29 +914,29 @@ public class Collector {
             }
             if (counter>0) {
                 successCounter = successCounter(key.toString(),checkThis,smap);
-                logger.info("    "+key.toString()+" - "+counter+" "+subjectType+", ");
-                logger.info("being "+successCounter+" successful download(s) and "+(counter-successCounter)+" failure(s)");
+                System.out.print("    "+key.toString()+" - "+counter+" "+subjectType+", ");
+                System.out.println("being "+successCounter+" successful download(s) and "+(counter-successCounter)+" failure(s)");
             }
             counter=0;
         }
     }
 
     private void showSummary(){
-        logger.info("");
-        logger.info("######################################################### Summary of findings - "+rep.toUpperCase()+" #########################################################");
-        logger.info("");
+        System.out.println("");
+        System.out.println("######################################################### Summary of findings - "+rep.toUpperCase()+" #########################################################");
+        System.out.println("");
         addToDB("addRun",null);
-        logger.info("Start time: "+ sdf.format(startTime));
-        logger.info("Finish time: "+sdf.format(finishTime));
-        logger.info("Download duration: "+getDurationString(finishTime-startTime));
-        logger.info("Total number of "+rep+" records: "+numberOfRecords);
-        logger.info("");
-        logger.info("-------- File information");
-        logger.info("The number of downloaded files ("+ succeededDownloads +") makes "+
+        System.out.println("Start time: "+ sdf.format(startTime));
+        System.out.println("Finish time: "+sdf.format(finishTime));
+        System.out.println("Download duration: "+getDurationString(finishTime-startTime));
+        System.out.println("Total number of "+rep+" records: "+numberOfRecords);
+        System.out.println("");
+        System.out.println("-------- File information");
+        System.out.println("The number of downloaded files ("+ succeededDownloads +") makes "+
                 new DecimalFormat("#.00").format(((double) succeededDownloads *100)/(double)numberOfFiles)+
                 "% of the total number of "+rep+" download links available ("+numberOfFiles+").");
-        logger.info("");
-        logger.info("Of those links:");
+        System.out.println("");
+        System.out.println("Of those links:");
         Object[] uniqueFields = new HashSet<Object>(allExt).toArray();
         int all = 0;
         int success = 0;
@@ -1047,95 +945,93 @@ public class Collector {
             all = counter(uniqueFields[i].toString(),"allExt");
             if (all>0) {
                 success = counter(uniqueFields[i].toString(), "successExt");
-                logger.info("");
+                System.out.println("");
                 item = uniqueFields[i].toString().toUpperCase();
-                logger.info(all + " had the " + item + " extension ("+
+                System.out.println(all + " had the " + item + " extension ("+
                         new DecimalFormat("#.00").format((((double)all*100)/(double)numberOfFiles))+"% of all links), being " + success +" downloaded successfully ("+
                         new DecimalFormat("#.00").format((((double)success*100)/(double) succeededDownloads))+"% of all downloads) which makes a "+
                         new DecimalFormat("#.00").format((((double)success*100)/(double) all))+"% success rate");
-                logger.info("--- The following domains had this extension:");
+                System.out.println("--- The following domains had this extension:");
                 displaySubjects(uniqueFields[i].toString(),"extension",item);
             }
         }
         Charts thischart = new Charts();
         if (generateCharts){
-            thischart.createBarChart(
+            thischart.createChart(
                     "Successful domains per extension - "+rep.toUpperCase(),
                     "Domains",
                     "Successful downloads",
-                    //thischart.pullBarChartData("domPerExtPerRun_1",new String[]{Integer.toString(runid)}),
-                    "domPerExtPerRun_1",
+                    thischart.pullChartData("domPerExtPerRun_1",new String[]{Integer.toString(runid)}),
                     finishTime,
                     Integer.toString(runid),
                     0,
                     true
             );
         }
-        logger.info("");
-        logger.info("Extensions from domains:");
+        System.out.println("");
+        System.out.println("Extensions from domains:");
         uniqueFields = new HashSet<Object>(allUrlDomains).toArray();
         for (int f=0;f<uniqueFields.length;f++){
             all = counter(uniqueFields[f].toString(),"allUrlDomains");
             if (all>0) {
                 success = counter(uniqueFields[f].toString(), "successUrlDomains");
-                logger.info("");
+                System.out.println("");
                 item = uniqueFields[f].toString();
-                logger.info("\"" + item + "\" counts " + all + " link(s) (" +
+                System.out.println("\"" + item + "\" counts " + all + " link(s) (" +
                         new DecimalFormat("#.00").format((((double) all * 100) / (double) numberOfFiles)) + "% of all links) and " + success + " download(s) (" +
                         new DecimalFormat("#.00").format((((double) success * 100) / (double) succeededDownloads)) + "% of all downloads) which makes a " +
                         new DecimalFormat("#.00").format((((double) success * 100) / (double) all)) + "% success rate");
-                logger.info("--- This domain had the following extensions:");
+                System.out.println("--- This domain had the following extensions:");
                 displaySubjects(uniqueFields[f].toString(),"domain",item);
             }
         }
         if (generateCharts){
-            thischart.createBarChart(
+            thischart.createChart(
                     "Successful extensions per domain - "+rep.toUpperCase(),
                     "Extensions",
                     "Successful downloads",
-                    //thischart.pullBarChartData("extPerDomPerRun_1",new String[]{Integer.toString(runid)}),
-                    "extPerDomPerRun_1",
+                    thischart.pullChartData("extPerDomPerRun_1",new String[]{Integer.toString(runid)}),
                     finishTime,
                     Integer.toString(runid),
                     0,
                     true
             );
         }
-        logger.info("");
-        logger.info("Download error codes:");
+        System.out.println("");
+        System.out.println("Download error codes:");
         displayFieldCounters(downloadErrorCodes,"downloadErrorCodes","error(s)");
-        logger.info("");
-        logger.info("-------- Field information");
+        System.out.println("");
+        System.out.println("-------- Field information");
         int norf = db.getNumberFromDB("numberOfRecordFields",runid);
         int nom = db.getNumberFromDB("numberOfMatches",runid);
         int noff = db.getNumberFromDB("numberOfFIleFields",runid);
-        logger.info("Number of fields analyzed on "+rep+" records: "+norf);
-        logger.info("Number of fields analyzed on "+rep+" files: "+noff);
-        logger.info("Number of matches found when comparing "+rep+" records with "+rep+" files: "+nom);
-        logger.info("The number of matches ("+nom+") makes "+
+        System.out.println("Number of fields analyzed on "+rep+" records: "+norf);
+        System.out.println("Number of fields analyzed on "+rep+" files: "+noff);
+        System.out.println("Number of matches found when comparing "+rep+" records with "+rep+" files: "+nom);
+        System.out.println("The number of matches ("+nom+") makes "+
                 new DecimalFormat("#.00").format((((double)nom*100)/(double)norf))+
                 "% of the total number of "+rep+" fields ("+norf+").");
-        logger.info("");
-        logger.info("The smallest non-match field is: "+smallestNonMatch);
-        logger.info("");
-        logger.info("--- Identifiers:");
+        System.out.println("");
+        System.out.println("The smallest non-match field is: "+smallestNonMatch);
+        System.out.println("");
+        System.out.println("--- Identifiers:");
         displayFieldCounters(TitleIDs,"TitleIDs","title identifiers");
         displayFieldCounters(UrlIDs,"UrlIDs","url identifiers");
         displayFieldCounters(IdIDs,"IdIDs","id identifiers");
-        logger.info("");
-        logger.info("--- Match methods:");
-        logger.info("    By removing multiple spaces: "+ removeMultipleSpaces);
-        logger.info("    By leaving only numbers and letters on both fields: "+leaveOnlyNumbersAndLetters);
-        logger.info("    By replacing new lines with spaces: "+replaceNewLinesWithSpaces);
-        logger.info("    By removing leading and trailing spaces: "+removeLeadingAndTrailingSpaces);
-        logger.info("");
-        logger.info("--- Reasons for the match(es) in the records:");
+        System.out.println("");
+        System.out.println("--- Match methods:");
+        System.out.println("    By removing multiple spaces: "+ removeMultipleSpaces);
+        System.out.println("    By leaving only numbers and letters on both fields: "+leaveOnlyNumbersAndLetters);
+        System.out.println("    By replacing new lines with spaces: "+replaceNewLinesWithSpaces);
+        System.out.println("    By removing leading and trailing spaces: "+removeLeadingAndTrailingSpaces);
+        System.out.println("");
+        System.out.println("--- Reasons for the match(es) in the records:");
         displayFieldCounters(matchFieldsRecord,"matchFieldsRecord","match(es)");
-        logger.info("");
-        logger.info("--- Reasons for the match(es) in the files:");
+        System.out.println("");
+        System.out.println("--- Reasons for the match(es) in the files:");
         displayFieldCounters(matchFieldsFile,"matchFieldsFile","match(es)");
-        logger.info("");
-        logger.info("######################################################### End of the Summary - "+rep.toUpperCase()+" ##########################################################");
+        System.out.println("");
+        System.out.println("######################################################### End of the Summary - "+rep.toUpperCase()+" ##########################################################");
     }
 
     private void displayFieldCounters(ArrayList list, String listname, String typemessage){
@@ -1144,7 +1040,7 @@ public class Collector {
         for (int f=0;f<uniqueFields.length;f++){
             all = counter(uniqueFields[f].toString(),listname);
             if (all>0) {
-                logger.info("    "+uniqueFields[f].toString()+" - "+all+" "+typemessage);
+                System.out.println("    "+uniqueFields[f].toString()+" - "+all+" "+typemessage);
                 if (listname.endsWith("IDs")){
                     addToDB("addId",new String[]{
                             uniqueFields[f].toString(),
@@ -1261,11 +1157,43 @@ public class Collector {
                         array[1] + ",\"" +
                         array[2] + "\")";
             }
-            //logger.info("query: "+query);
+            //System.out.println("query: "+query);
             conn.prepareStatement(query).execute();
             conn.close();
         }catch (Exception e){
-            logger.error("ERROR:",e);
+            e.printStackTrace();
+        }
+    }
+
+    private void writeToCsv(String rep){
+        System.out.println("");
+        try {
+            Files.write(
+                    Paths.get("files/csv/"+rep+".csv"),
+                    Arrays.asList("1st line", "2nd line"),
+                    Charset.forName("UTF-8")
+            );
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    private void getCoreList(){ // used once to download all pages, one by one
+        try {
+            URL url;
+            BufferedReader in;
+            PrintWriter writer = new PrintWriter("files/json/core_selection_long.json", "UTF-8");
+            for (int i = 50;i<=70;i++) {    // institutions
+                System.out.println("---- institution # " + i+" ----");
+                for (int p = 1; p <= 100; p++) {    // pages
+                    url = new URL("https://core.ac.uk/api-v2/articles/search/repositories.id:%28"+i+"%29?metadata=true&fulltext=false&page=" + p + "&citations=false&similar=false&duplicate=false&urls=true&extractedUrls=false&faithfulMetadata=false&apiKey=lWIs56bFaqSZ0cD8PLYdHg3OGUxyXVBK");
+                    in = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+                    System.out.println("page # " + p);
+                    writer.println(in.readLine());
+                }
+            }
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
